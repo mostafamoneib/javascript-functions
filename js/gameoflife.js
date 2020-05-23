@@ -22,7 +22,9 @@ function contains(cell) {
 }
 
 const printCell = (cell, state) => {
-  
+  const alive = contains(cell, state);
+  if (alive) return '\u25A3';
+  else return '\u25A2'; 
 };
 
 const corners = (state = []) => {};
