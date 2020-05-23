@@ -18,6 +18,7 @@ function contains(cell) {
     if(this[i][0] === cell[0] && this[i][1] === cell[1]) return true;
     else continue;
   }  
+  return false;
 }
 
 const printCell = (cell, state) => {
