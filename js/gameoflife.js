@@ -22,12 +22,24 @@ function contains(cell) {
 }
 
 const printCell = (cell, state) => {
-  const alive = contains.call(cell, state);
+  const alive = contains.call(state, cell);
   if (alive) return '\u25A3';
   else return '\u25A2'; 
 };
 
-const corners = (state = []) => {};
+const corners = (state = []) => {
+  let args = [...arguments];
+  if (args.length === 0) return {topRight: [0,0], bottomLeft: [0,0]};
+  let minX = state[0][0], minY = state[0][1];
+  let maxX = state[0][0], maxY = state[0][1];
+  for (i in state) {
+    if(state[i][0] < minX) minX = state[i][0];
+    if(state[i][1] < minY) minY = state[i][1];
+    if(state[i][0] > maxX) maxX = state[i][0];
+    if(state[i][1] > maxY) maxY = state[i][1];
+  }
+  return {topRight: [maxX, maxY], bottomLeft: [minX, minY]};
+};
 
 const printCells = (state) => {};
 
