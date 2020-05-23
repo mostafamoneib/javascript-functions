@@ -1,11 +1,28 @@
-function seed() {}
+function seed() {
+  const returnArray = [];
+  let args = [...arguments];  // betemla args b kol haga in arguments
+  for(i in args){
+    returnArray.push(args[i]);
+  }
+  return returnArray;
+}
 
-function same([x, y], [j, k]) {}
+function same([x, y], [j, k]) {
+  if(x!== j || y!==k) return false;
+  else return true;  
+}
 
 // The game state to search for `cell` is passed as the `this` value of the function.
-function contains(cell) {}
+function contains(cell) {
+  for (i in this) {
+    if(this[i][0] === cell[0] && this[i][1] === cell[1]) return true;
+    else continue;
+  }  
+}
 
-const printCell = (cell, state) => {};
+const printCell = (cell, state) => {
+  
+};
 
 const corners = (state = []) => {};
 
