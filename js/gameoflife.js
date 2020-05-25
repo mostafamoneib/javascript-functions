@@ -28,32 +28,108 @@ const printCell = (cell, state) => {
 };
 
 const corners = (state = []) => {
-  let args = [...arguments];
-  if (args.length === 0) return {topRight: [0,0], bottomLeft: [0,0]};
-  let minX = state[0][0], minY = state[0][1];
-  let maxX = state[0][0], maxY = state[0][1];
-  for (i in state) {
-    if(state[i][0] < minX) minX = state[i][0];
-    if(state[i][1] < minY) minY = state[i][1];
-    if(state[i][0] > maxX) maxX = state[i][0];
-    if(state[i][1] > maxY) maxY = state[i][1];
+  // let args = [...arguments];
+  // if (args.length === 0) return {topRight: [0,0], bottomLeft: [0,0]};
+  // let minX = state[0][0], minY = state[0][1];
+  // let maxX = state[0][0], maxY = state[0][1];
+  // for (i in state) {
+  //   if(state[i][0] < minX) minX = state[i][0];
+  //   if(state[i][1] < minY) minY = state[i][1];
+  //   if(state[i][0] > maxX) maxX = state[i][0];
+  //   if(state[i][1] > maxY) maxY = state[i][1];
+  // }
+  // return {topRight: [maxX, maxY], bottomLeft: [minX, minY]};
+
+  if(state.length === 0) return {topRight: [0,0], bottomLeft: [0,0]}
+
+  const xValues = state.map(([x,_]) => x);
+  const yValues = state.map(([_,y]) => y);
+
+  return {
+    topRight: [Math.max(...xValues), Math.max(...yValues)], 
+    bottomLeft: [Math.min(...xValues), Math.min(...yValues)]
   }
-  return {topRight: [maxX, maxY], bottomLeft: [minX, minY]};
 };
 
-const printCells = (state) => {};
+const printCells = (state) => {
+  const { topRight, bottomLeft } = corners(state);
+  let board = "";
+  for (let i = bottomLeft[0]; i <= topRight[0]; i++) {
+    let row = [];
+    for (let j = bottomLeft[1]; j <= topRight[1]; j++) {
+      row.push(printCell([i,j], state));
+    }  
+    board += row.join(" ") + "\n";
+  }
+  return board;
+};
 
-const getNeighborsOf = ([x, y]) => {};
+// const getNeighborsOf = ([x, y]) => {
+//   let arrayOfNeighbors = [];
+//   for (let i = x-1; i <= x+1; i++) {
+//     for (let j = y-1; j<= y+1; j++) {
+//       if (i === x && j === y) continue;
+//       arrayOfNeighbors.push([i,j]);
+//     }
+//   } 
+//   return arrayOfNeighbors;
+// };
 
-const getLivingNeighbors = (cell, state) => {};
+const getNeighborsOf = ([x, y]) => [
+  [x-1, y-1], [x-1, y], [x-1, y+1],
+  [x, y-1],             [x, y+1],
+  [x+1, y-1], [x+1, y], [x+1, y+1] 
+];
 
-const willBeAlive = (cell, state) => {};
+/*
+  filter method beta5od callback function
+  for each n in the neighbors array of the cell ..
+  return n dy law if condition ba3d el arrow succeeds
+  condition: get the contains function and bind to it, that its 'this' parameter refers to state array
+  the contains function takes as a parameter a cell .. 
+  so to actually call the contains function add '(n)' beside it to call it
+ */
+const getLivingNeighbors = (cell, state) => {
+  return getNeighborsOf(cell).filter((n) => contains.bind(state)(n));
+};
 
-const calculateNext = (state) => {};
+const willBeAlive = (cell, state) => {
+  const neighbors = getLivingNeighbors(cell, state);
+  const alive = contains.call(state, cell);
+  const willBeAlive = (neighbors.length === 3 || (neighbors.length === 2 && alive)) ? true: false;
+  return willBeAlive;
+};
 
-const iterate = (state, iterations) => {};
+const calculateNext = (state) => {
+  const { topRight, bottomLeft } = corners(state);
+  let newState = [];
+  for(let i = bottomLeft[0]-1; i <= topRight[0]+1; i++ ){
+    for(let j = bottomLeft[1]-1; j <= topRight[1]+1; j++){
+      if(willBeAlive([i,j], state)) newState.push([i,j]);
+    }
+  }
+  return newState;
+};
 
-const main = (pattern, iterations) => {};
+const iterate = (state, iterations) => {
+  let stateArray = [state];
+  //let currentState = state;
+  for (let i = 0; i < iterations; i++) {
+    // let newState = calculateNext(currentState);
+    // stateArray.push(newState);
+    // currentState = newState;
+    stateArray.push(calculateNext(stateArray[stateArray.length - 1]));
+  }
+  return stateArray;
+};
+
+const main = (pattern, iterations) => {
+  const result = iterate(startPatterns[pattern], iterations);
+  // for (i in result) {
+  //   console.log(printCells(result[i]));
+  // }
+  result.forEach((v) => { return console.log(printCells(v))});
+};
 
 const startPatterns = {
     rpentomino: [
